@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework.GcfEvents;
 using Google.Events;
 using Google.Events.Protobuf;
@@ -86,6 +87,17 @@ namespace Google.Cloud.Functions.Framework.Tests.GcfEvents
             Assert.Equal(2, map.Count);
             Assert.Equal("x", map["field1"]);
             Assert.Equal(new object[] { "x", 1L }, map["field2"]);
+        }
+
+        [Fact]
+        public async Task PubSub_SyntheticData()
+        {
+            var data = await ConvertAndDeserialize<MessagePublishedData>("pubsub_text.json");
+            var message = data.Message!;
+            Assert.NotNull(message);
+            var expectedTimestamp = Timestamp.FromDateTimeOffset(new DateTimeOffset(2020, 5, 6, 7, 33, 34, 556, TimeSpan.Zero));
+            Assert.Equal(expectedTimestamp, message.PublishTime);
+            Assert.Equal("1144231683168617", message.MessageId);
         }
 
         [Fact]
@@ -206,8 +218,10 @@ namespace Google.Cloud.Functions.Framework.Tests.GcfEvents
         private static async Task<T> ConvertAndDeserialize<T>(string resourceName) where T : class
         {
             var context = GcfEventResources.CreateHttpContext(resourceName);
-            var cloudEvent = await GcfConverters.ConvertGcfEventToCloudEvent(context.Request);
-            return CloudEventConverters.ConvertCloudEventData<T>(cloudEvent);
+            var formatter = CloudEventFormatterAttribute.CreateFormatter(typeof(T))
+                ?? throw new InvalidOperationException("No formatter available");
+            var cloudEvent = await GcfConverters.ConvertGcfEventToCloudEvent(context.Request, formatter);
+            return (T) cloudEvent.Data;
         }
     }
 }

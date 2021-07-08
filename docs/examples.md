@@ -89,7 +89,7 @@ gcloud functions deploy simple-http \
 ## SimpleEventFunction
 
 The [SimpleEventFunction](../examples/Google.Cloud.Functions.Examples.SimpleEventFunction)
-function is the result of creating a new Cloud Event function via the
+function is the result of creating a new CloudEvent function via the
 template using the following command line:
 
 ```sh
@@ -111,7 +111,7 @@ gcloud functions deploy simple-event \
 ## SimpleUntypedEventFunction
 
 The [SimpleUntypedEventFunction](../examples/Google.Cloud.Functions.Examples.SimpleUntypedEventFunction)
-function is the result of creating a new untyped Cloud Event function via the
+function is the result of creating a new untyped CloudEvent function via the
 template using the following command line:
 
 ```sh
@@ -153,7 +153,7 @@ gcloud functions deploy vb-http \
 ## VbEventFunction
 
 The [VbEventFunction](../examples/Google.Cloud.Functions.Examples.VbEventFunction)
-function is the result of creating a new Cloud Event function via the
+function is the result of creating a new CloudEvent function via the
 template using the following command line:
 
 ```sh
@@ -176,7 +176,7 @@ gcloud functions deploy vb-event \
 
 The
 [VbUntypedEventFunction](../examples/Google.Cloud.Functions.Examples.VbUntypedEventFunction)
-function is the result of creating a new untyped Cloud Event function via the
+function is the result of creating a new untyped CloudEvent function via the
 template using the following command line:
 
 ```sh
@@ -218,7 +218,7 @@ gcloud functions deploy fsharp-http \
 ## FSharpEventFunction
 
 The [FSharpEventFunction](../examples/Google.Cloud.Functions.Examples.FSharpEventFunction)
-function is the result of creating a new Cloud Event function via the
+function is the result of creating a new CloudEvent function via the
 template using the following command line:
 
 ```sh
@@ -240,7 +240,7 @@ gcloud functions deploy fsharp-event \
 ## FSharpUntypedEventFunction
 
 The [FSharpUntypedEventFunction](../examples/Google.Cloud.Functions.Examples.FSharpUntypedEventFunction)
-function is the result of creating a new untyped Cloud Event function via the
+function is the result of creating a new untyped CloudEvent function via the
 template using the following command line:
 
 ```sh
@@ -294,6 +294,33 @@ gcloud functions deploy advanced-dependency-injection \
   --allow-unauthenticated \
   --entry-point Google.Cloud.Functions.Examples.AdvancedDependencyInjection.Function
 ```
+
+## CustomEventDataFunction
+
+
+The [CustomEventDataFunction](../examples/Google.Cloud.Functions.Examples.CustomEventDataFunction)
+example demonstrates how a CloudEvent function can specify a
+CloudEventFormatter to use when deserializing the CloudEvent. If the
+target data type for the CloudEvent function is annotated with the
+`CloudEventFormatterAttribute` type, the formatter specified by that
+attribute is used automatically. Otherwise, a `CloudEventFormatter`
+must be added as a dependency via a Functions Startup class. 
+
+The same approach can be used for untyped CloudEvent functions.
+Those use
+`CloudNative.CloudEvents.SystemTextJson.JsonEventFormatter` by
+default, but injecting a different `CloudEventFormatter` in a
+startup class will instruct the framework to use that formatter.
+
+```sh
+gcloud functions deploy advanced-dependency-injection \
+  --runtime dotnet3 \
+  --trigger-http \
+  --allow-unauthenticated \
+```
+
+(Note that this deployment example specified `--trigger-http` as it
+doesn't correspond to any Google CloudEvent type.)
 
 ## TestableDependencies
 
@@ -350,15 +377,6 @@ by the `ASPNETCORE_ENVIRONMENT` and `DOTNET_ENVIRONMENT` environment variables.
 > ASP.NET Core is Production. You may wish to set the `ASPNETCORE_ENVIRONMENT` or `DOTNET_ENVIRONMENT`
 > environment variables on a user level, to avoid accidentally attempting to run against the production
 > configuration.
-
-> **Note on AppSettings files**
->
-> Currently, `appsettings.json` files are not copied by default when the project is published using `dotnet publish`.
-> This means that although the function meay run as expected locally, when it is deployed the settings files would be
-> absent. This can be fixed by explicitly including them in the project file, [as shown in this
-> example](../examples/Google.Cloud.Functions.Examples.Configuration/Google.Cloud.Functions.Examples.Configuration.csproj).
-> We hope to do this implicitly in a future release. See [issue
-> 201](https://github.com/GoogleCloudPlatform/functions-framework-dotnet/issues/201) for more information.
 
 Sample deployment:
 
@@ -445,7 +463,7 @@ for more details.
 Sample deployment, from the `examples` directory:
 
 ```sh
-gcloud beta functions deploy multi-project \
+gcloud functions deploy multi-project \
   --runtime dotnet3 \
   --trigger-http \
   --entry-point=Google.Cloud.Functions.Examples.MultiProjectFunction.Function

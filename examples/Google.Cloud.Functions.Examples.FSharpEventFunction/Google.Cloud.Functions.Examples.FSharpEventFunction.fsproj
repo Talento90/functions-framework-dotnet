@@ -6,10 +6,11 @@
 
   <ItemGroup>
     <Compile Include="Function.fs" />
+    <None Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Functions.Hosting" Version="1.0.0-beta04" />
-    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0-beta03" />
+    <PackageReference Include="Google.Cloud.Functions.Hosting" Version="1.0.0" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.0.0" />
   </ItemGroup>
 </Project>
